@@ -65,15 +65,15 @@ class choose_WANs:
 
 # class order_WANs:       
 
-class Active:
-    def __init__(self):
-        # self.ifmetric = ifmetric  
-        # self.NAT_rule = NAT_rule  
-    def ifmetric(self):
-        os.system('ifmetric {} 2'.format(WANs["main iface"]))
-        os.system('ifmetric {} 4'.format(WANs["sec iface"]))
-        os.system('ifmetric {} 6'.format(WANs["backup iface"]))
-    # def NAT_rule(self):
+# class Active:
+#     def __init__(self):
+#         # self.ifmetric = ifmetric  
+#         # self.NAT_rule = NAT_rule  
+#     def ifmetric(self):
+#         os.system('ifmetric {} 2'.format(WANs["main iface"]))
+#         os.system('ifmetric {} 4'.format(WANs["sec iface"]))
+#         os.system('ifmetric {} 6'.format(WANs["backup iface"]))
+#     # def NAT_rule(self):
 
 
 
@@ -93,8 +93,12 @@ if __name__ == '__main__':
     # setting_iface = choose_WANs.setting(can_use_WANs)
     # print(setting_iface)
     # choose_WANs.WANs_order(setting_iface)
-    choose_3_WANs = choose_WANs.choose_3_WANs(ip_WANs)
-    print(choose_3_WANs)
+
+
+    # choose_3_WANs = choose_WANs.choose_3_WANs(ip_WANs)
+    choose_3_WANs = {'main iface': ['enp0s3'], 'sec iface': ['enp0s8'], 'backup iface': ['enp0s10']}
+
+    print(choose_3_WANs['main iface'])
 
 
 

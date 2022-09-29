@@ -9,8 +9,14 @@ import logging
 def iface_name():
     en_to_eth = {}
     eth_to_en = {}
-    en_to_eth["ens4"] = "eth1"
-    eth_to_en["eth1"] = "ens4"
+    en_to_eth["enp0s3"] = "eth1"
+    en_to_eth["enp0s8"] = "eth2"
+    en_to_eth["enp0s9"] = "eth3"
+    en_to_eth["enp0s10"] = "eth4"
+    eth_to_en["eth1"] = "enp0s3"
+    eth_to_en["eth2"] = "enp0s8"
+    eth_to_en["eth3"] = "enp0s9"
+    eth_to_en["eth4"] = "enp0s10"
     return en_to_eth,eth_to_en
     
 def json_to_str(json_file):
@@ -22,9 +28,8 @@ def str_to_json(json_str_file):
     json_fomat = json.loads(json_str_file)
     return json_fomat
 
-# 1. 先找全部的 WAN                    find_interface()
-# 2. 篩選出跟 NetworkManager 有連接的   (不會寫)
-# 3. 再篩選出有 IP 的                   if_has_IP()
+# find_interface()  先找全部的 WAN                    
+# if_has_IP()       再篩選出有 IP 的                   
 class find_WANs:
     def find_interface():
         interface_list = socket.if_nameindex()
@@ -43,46 +48,64 @@ class find_WANs:
         for i in range(len(WANs)):
             all_WANs.append(os.system('ip -4 addr show {0} | grep -oP \'(?<=inet\s)\d+(\.\d+){3}\'  >/dev/null 2>&1'.format(WANs[i],'1','2','{3}' )))
             if (all_WANs[i] == 256) : 
-                logging.info("{} has no ip.".format(WANs[i]))
-                
+                logging.info("{} has no ip.".format(WANs[i]))       #這行是啥  
             else:
                 has_IP_WANs.append(WANs[i])
         logging.info('這些是有 ip 的 WAN ' + str(has_IP_WANs))
         return has_IP_WANs
 
 
-# 1. 選3個可用的 WAN  choose_3_WANs()
-# 2. 排優先級         WANs_order()
+# choose_3_WANs() 選3個可用的 WAN  
 class choose_WANs:
     def choose_3_WANs(WANs): 
-        main_iface = input("Please choose main iface: ") 
-        sec_iface = input("Please choose sec iface: ") 
-        backup_iface = input("Please choose backup iface: ") 
-        choose_3_WANs = []
-        choose_3_WANs.append(main_iface)
-        choose_3_WANs.append(sec_iface)
-        choose_3_WANs.append(backup_iface)
-        return choose_3_WANs
+        choose_WANs = {"main iface":[],"sec iface":[],"backup iface":[]}
+        print("Choose 3 WANs: ")
+        print("Now all available WANs are: ", WANs )
 
-    def setting(WANs):
-        if len(WANs) == 4:
-            setting_iface = dict(main_iface=WANs[0] ,sec_iface=WANs[1],backup_iface= WANs[2],forth_iface= WANs[3])
-        elif len(WANs) == 3:
-            setting_iface = dict(main_iface=WANs[0] ,sec_iface=WANs[1],backup_iface= WANs[2])
-        elif len(WANs) == 2:
-            setting_iface = dict(main_iface=WANs[0] ,sec_iface=WANs[1])
-        elif len(WANs) == 1:
-            setting_iface = dict(main_iface=WANs[0])
-        elif len(WANs) == 0:
-            print("No any WAN can use.")
+        main_iface = input("Please choose main iface: ")     
+        if main_iface in WANs:
+            choose_WANs["main iface"].append(main_iface)
+            # choose_WANs.append(main_iface)
         else:
-            print("Something Wrong.")
-        return setting_iface
+            print("it's not available WAN. ")
+            choose_WANs["main iface"].append(None)
+            return choose_WANs
+        sec_iface = input("Please choose sec iface: ") 
+        if sec_iface in WANs and sec_iface not in main_iface:
+            # choose_WANs.append(sec_iface)
+            choose_WANs["sec iface"].append(sec_iface)
+        else:
+            print("it's not available WAN. ")
+            choose_WANs["main iface"].append()
+            return choose_WANs
+        backup_iface = input("Please choose backup iface: ") 
+        if backup_iface in WANs and backup_iface not in main_iface and backup_iface not in sec_iface:
+            # choose_WANs.append(backup_iface)
+            choose_WANs["backup iface"].append(backup_iface)
+        else:
+            print("it's not available WAN. ")
+            choose_WANs["main iface"].append()
+            return choose_WANs
+        return choose_WANs
 
-    
+    # def setting(WANs):
+    #     if len(WANs) == 4:
+    #         setting_iface = dict(main_iface=WANs[0] ,sec_iface=WANs[1],backup_iface= WANs[2],forth_iface= WANs[3])
+    #     elif len(WANs) == 3:
+    #         setting_iface = dict(main_iface=WANs[0] ,sec_iface=WANs[1],backup_iface= WANs[2])
+    #     elif len(WANs) == 2:
+    #         setting_iface = dict(main_iface=WANs[0] ,sec_iface=WANs[1])
+    #     elif len(WANs) == 1:
+    #         setting_iface = dict(main_iface=WANs[0])
+    #     elif len(WANs) == 0:
+    #         print("No any WAN can use.")
+    #     else:
+    #         print("Something Wrong.")
+    #     return setting_iface
 
+# WANs_order()     排優先級          
 # class order_WANs:
-#     def WANs_order(WANs): 
+    # def WANs_order(WANs): 
 #         if len(WANs)==4:
 #             for i in WANs:
 #                 if i=="main_iface":
@@ -129,12 +152,17 @@ if __name__ == '__main__':
     DATE_FORMAT = '%Y%m%d %H:%M:%S'
     logging.basicConfig(level=logging.INFO, filename='/var/log/failover.log', format=LOGGING_FORMAT, datefmt=DATE_FORMAT)
     input_json = str_to_json(sys.argv[1])
+    ##
+    all_WANs = find_WANs.find_interface()
+    ip_WANs = find_WANs.if_has_IP(all_WANs)
+    choose3_WANs = choose_WANs.choose_3_WANs(ip_WANs)
+    ##
+
     if input_json['function'] == 'supported':
-        output_json = {}
+        output_json = {}  
         try:
             output_json["ifaces"] = []
-            all_WANs = find_WANs.find_interface()
-            ip_WANs = find_WANs.if_has_IP(all_WANs)
+            
             en_to_eth,eth_to_en = iface_name()
             for iface in ip_WANs:
                 output_json["ifaces"].append({"text":en_to_eth[iface],"value":iface})
@@ -146,10 +174,37 @@ if __name__ == '__main__':
         sys.stdout.write(json_to_str(output_json))
         sys.stdout.flush()
 
+
+    if input_json['function'] == 'current_config': #讀取目前設定值 
+        output_json = {}  
+        try:
+            output_json['mode'] = "fo"
+            output_json['ping_target'] = "8.8.8.8"
+            output_json["fo"] = []
+            
+            # for iface in choose3_WANs:
+            output_json["fo"].append({"failback":"true"})
+            output_json["fo"].append({"main iface":choose3_WANs["main iface"]})
+            output_json["fo"].append({"sec iface":choose3_WANs["sec iface"]})
+            output_json["fo"].append({"backup iface":choose3_WANs["backup iface"]})
+            # output_json["fo"].append({"main_iface":choose3_WANs["main_iface"]})
+
+            
+            output_json['status'] = True
+
+        except:
+            error_msg = "nono"
+            output_json['status'] = False
+            output_json['err_message'] = error_msg
+        sys.stdout.write(json_to_str(output_json))
+        sys.stdout.flush()        
+
+
     else:
         all_WANs = find_WANs.find_interface()
         ip_WANs = find_WANs.if_has_IP(all_WANs)
         host = '8.8.8.8'
-        can_use_WANs = find_WANs.if_ping_8888(host, ip_WANs)
-        # three_can_use_WANs = choose_WANs.choose_3_WANs(can_use_WANs)
-        setting_iface = choose_WANs.setting(can_use_WANs)
+
+        # setting_iface = choose_WANs.setting(ip_WANs)
+
+    
