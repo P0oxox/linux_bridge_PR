@@ -88,20 +88,6 @@ class choose_WANs:
             return choose_WANs
         return choose_WANs
 
-    # def setting(WANs):
-    #     if len(WANs) == 4:
-    #         setting_iface = dict(main_iface=WANs[0] ,sec_iface=WANs[1],backup_iface= WANs[2],forth_iface= WANs[3])
-    #     elif len(WANs) == 3:
-    #         setting_iface = dict(main_iface=WANs[0] ,sec_iface=WANs[1],backup_iface= WANs[2])
-    #     elif len(WANs) == 2:
-    #         setting_iface = dict(main_iface=WANs[0] ,sec_iface=WANs[1])
-    #     elif len(WANs) == 1:
-    #         setting_iface = dict(main_iface=WANs[0])
-    #     elif len(WANs) == 0:
-    #         print("No any WAN can use.")
-    #     else:
-    #         print("Something Wrong.")
-    #     return setting_iface
 
 # WANs_order()     排優先級          
 # class order_WANs:
@@ -153,6 +139,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, filename='/var/log/failover.log', format=LOGGING_FORMAT, datefmt=DATE_FORMAT)
     input_json = str_to_json(sys.argv[1])
     ##
+    # 全域變數???
     all_WANs = find_WANs.find_interface()
     ip_WANs = find_WANs.if_has_IP(all_WANs)
     choose3_WANs = choose_WANs.choose_3_WANs(ip_WANs)
@@ -187,9 +174,7 @@ if __name__ == '__main__':
             output_json["fo"].append({"main iface":choose3_WANs["main iface"]})
             output_json["fo"].append({"sec iface":choose3_WANs["sec iface"]})
             output_json["fo"].append({"backup iface":choose3_WANs["backup iface"]})
-            # output_json["fo"].append({"main_iface":choose3_WANs["main_iface"]})
-
-            
+            output_json['single'] = {"main_iface":choose3_WANs["main iface"]}
             output_json['status'] = True
 
         except:

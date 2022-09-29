@@ -63,7 +63,8 @@ class choose_WANs:
             return choose_WANs
         return choose_WANs
 
-# class order_WANs:       
+class order_WANs:  
+    WAN_status = {"main iface" = "Active"}     
 
 # class Active:
 #     def __init__(self):
@@ -77,17 +78,14 @@ class choose_WANs:
 
 
 
-# mazda = Cars("blue", 4)
-# mazda.drive()
-
 
 
 
 
 if __name__ == '__main__':
     # all_WANs = find_WANs.find_interface()
-    ip_WANs = find_WANs.if_has_IP(iface)
-    host = '8.8.8.8'
+    # ip_WANs = find_WANs.if_has_IP(iface)
+    # host = '8.8.8.8'
     # can_use_WANs = find_WANs.if_ping_8888(host, ip_WANs)
     # three_can_use_WANs = choose_WANs.choose_3_WANs(can_use_WANs)
     # setting_iface = choose_WANs.setting(can_use_WANs)
