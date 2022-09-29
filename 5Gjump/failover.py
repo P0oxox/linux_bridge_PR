@@ -89,48 +89,6 @@ class choose_WANs:
         return choose_WANs
 
 
-# WANs_order()     排優先級          
-# class order_WANs:
-    # def WANs_order(WANs): 
-#         if len(WANs)==4:
-#             for i in WANs:
-#                 if i=="main_iface":
-#                     print(WANs["main_iface"] + " is main iface.")
-#                     # os.system('ifmetric {} 2'.format(WANs["main_iface"]))
-#                     # os.system('ifmetric {} 8'.format(WANs["sec_iface"]))
-#                     # os.system('ifmetric {} 9'.format(WANs["backup_iface"]))
-#                     # os.system('ifmetric {} 10'.format(WANs["forth_iface"]))
-#                     nmcli connection modify WANs["main_iface"] ipv4.route-metric 1
-#                     nmcli connection up WANs["main_iface"]
-
-#                 elif i=="sec_iface":
-#                     print(WANs[i] + " is sec iface.")
-
-#                 elif i=="backup_iface":
-#                     print(WANs[i] + " is backup iface.")
-
-#                 elif i=="forth_iface":
-#                     print(WANs[i] + " is forth iface.")
-#                 else:
-#                     print("Something Wrong.")
-#         if len(WANs)==3:
-#             for i in WANs:
-#                 if i=="main_iface":
-#                     print(WANs["main_iface"] + " is main iface.")
-#                     os.system('ifmetric {} 1'.format(WANs["main_iface"]))
-#                     os.system('ifmetric {} 5'.format(WANs["sec_iface"]))
-#                     os.system('ifmetric {} 7'.format(WANs["backup_iface"]))
-#                 elif i=="sec_iface":
-#                     print(WANs[i] + " is sec iface.")
-
-#                 elif i=="backup_iface":
-#                     print(WANs[i] + " is backup iface.")
-#                 else:
-#                     print("Something Wrong.")
-
-
-
-
 
 
 if __name__ == '__main__':
@@ -168,8 +126,7 @@ if __name__ == '__main__':
             output_json['mode'] = "fo"
             output_json['ping_target'] = "8.8.8.8"
             output_json["fo"] = []
-            
-            # for iface in choose3_WANs:
+
             output_json["fo"].append({"failback":"true"})
             output_json["fo"].append({"main iface":choose3_WANs["main iface"]})
             output_json["fo"].append({"sec iface":choose3_WANs["sec iface"]})
