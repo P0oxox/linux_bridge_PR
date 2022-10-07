@@ -1,3 +1,7 @@
+'''
+要改很多地方
+'''
+
 import os
 import time
 from ping3 import ping, verbose_ping

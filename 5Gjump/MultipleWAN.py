@@ -66,12 +66,16 @@ if __name__ == '__main__':
             for iface in ip_wan:
                 output_json["ifaces"].append({"text":en_to_eth[iface],"value":iface})
             output_json['status'] = True
+            
 
         except:
             error_msg = "nono, something is wrong"
             output_json['status'] = False
             output_json['err_message'] = error_msg
+
+
         sys.stdout.write(json_to_str(output_json))
         sys.stdout.flush()
+        with open("supported_iface.json", "w") as f:
+            json.dump(json_to_str(output_json), f)
 
-# json跑去哪裡了

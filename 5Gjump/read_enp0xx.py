@@ -1,6 +1,5 @@
 import subprocess 
 
-
 '''
 把 ifconfig 拆成 ifconfig enp0s3、ifconfig enp0s8、ifconfig enp0s9......
 '''

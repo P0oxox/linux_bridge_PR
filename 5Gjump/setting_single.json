@@ -1,0 +1,6 @@
+{
+	"function":"setting",
+	"main_wan":"enp0s3",
+	"ping_target": "8.8.8.8",
+	"mode":"single"
+}
