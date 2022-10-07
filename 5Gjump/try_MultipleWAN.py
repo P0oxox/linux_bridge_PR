@@ -32,41 +32,44 @@ class supported():
 
 # 1. 讀json看是 fo 還是 single mode
 # 2. 產生 current_config.json(?)
-class setting():
-    def apply():
-        jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/setting_single.json','r')
-        a = json.load(jsonFile)
-        output_json = {}
-        if a['mode'] == "fo": #啟動systemd 
-            output_json["mode"] = a['mode']
-            output_json["ping_target"] = a['ping_target']
+def apply():
+    jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/setting_fo.json','r')
+    a = json.load(jsonFile)
+    output_json = {}
+    if a['mode'] == "fo": 
+        # os.system() 啟動systemd 
+        output_json["mode"] = a['mode']
+        output_json["ping_target"] = a['ping_target']
 
-            output_json["fo"] = []
-            output_json["fo"].append({"failback": True})
-            output_json["fo"].append({"main_iface": a['main_iface']})
-            output_json["fo"].append({"sec_iface": a['sec_iface']})
-            output_json["fo"].append({"backup_iface": a['backup_iface']})
-            output_json["detection_mode"] = a['detection_mode']
-            output_json["latency"] = a['latency']
-            output_json['status'] = True
+        output_json["fo"] = []
+        output_json["fo"].append({"failback": True})
+        output_json["fo"].append({"main_iface": a['main_iface']})
+        output_json["fo"].append({"sec_iface": a['sec_iface']})
+        output_json["fo"].append({"backup_iface": a['backup_iface']})
+        output_json["detection_mode"] = a['detection_mode']
+        output_json["latency"] = a['latency']
+        output_json['status'] = True
 
-        elif a['mode'] == "single":
-            output_json["single"] = []
-            output_json["single"].append({"main_iface": a['main_wan']})
-            output_json['status'] = True
+    elif a['mode'] == "single":
+        output_json["single"] = []
+        output_json["single"].append({"main_iface": a['main_wan']})
+        output_json['status'] = True
 
-        else:
-            error_msg = "nono, something is wrong"
-            output_json['status'] = False
-            output_json['err_message'] = error_msg
-        
-        sys.stdout.write(json_to_str(output_json))
-        sys.stdout.flush()
-        with open("current_config.json", "w") as f:
-            json.dump(json_to_str(output_json), f)     #要怎麼不覆蓋原來的檔案
+    else:
+        error_msg = "nono, something is wrong"
+        output_json['status'] = False
+        output_json['err_message'] = error_msg
+    
+    sys.stdout.write(json_to_str(output_json))
+    sys.stdout.flush()
+    with open("current_config.json", "w") as f:
+        json.dump(json_to_str(output_json), f)     #要怎麼不覆蓋原來的檔案
 
 
-
+def current_config():
+    jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
+    a = json.load(jsonFile)
+    output_json = {}
 
 if __name__ == '__main__':
     # {"function":"supported"}
