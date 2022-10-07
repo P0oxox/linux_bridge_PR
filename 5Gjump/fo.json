@@ -1,0 +1,13 @@
+
+{
+    "function": "setting",
+    "mode": "fo",
+    "ping_target": "8.8.8.8",
+    "failback": true,
+    "main_iface": "",
+      "sec_iface": "",
+      "backup_iface":"",
+    "detection_mode": "", 
+    "latency": { "threshold": "", "detection_period": "" }
+}
+

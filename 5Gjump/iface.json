@@ -1,0 +1,20 @@
+{
+  "inter_face": [
+    {
+      "text": "Mobile Network",
+      "value": "enp0s3"
+    },
+    {
+      "text": "Wi-Fi",
+      "value": "enp0s8"
+    },
+    {
+      "text": "LTE",
+      "value": "enp0s9"
+    },
+    {
+      "text": "NR",
+      "value": "enp0s10"
+    }
+  ]
+}
