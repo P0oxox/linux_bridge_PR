@@ -79,7 +79,7 @@ if __name__ == '__main__':
     ###
     all_wan = supported.find_WAN()  # read Json file to find all WAN
     ip_wan = supported.if_has_IP(all_wan)  # find who has ip in all WAN
-    setting() # fo mode or single mode
+    # setting() # fo mode or single mode
 
     ###
 
