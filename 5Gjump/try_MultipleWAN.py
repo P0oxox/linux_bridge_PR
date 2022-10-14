@@ -44,14 +44,10 @@ class supported():
         return has_IP_WANs
 
 
-# 1. 讀json看是 fo 還是 single mode
-# 2. 產生 current_config.json
-# 3. 產生 current_config.json
 def setting():
-    jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/setting_fo.json','r')
+    jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/setting_fo.json','r')   #setting_single
     a = json.load(jsonFile)
     output_json = {}
-    output_setting = {}
     if a['mode'] == "fo" :
         output_json["function"] = 'setting'
         output_json["mode"] = a['mode']
@@ -62,56 +58,73 @@ def setting():
         output_json["backup_iface"]=a['backup_iface']
         output_json["detection_mode"] = a['detection_mode']
         output_json["latency"] = a['latency']
-        # output_setting['status'] = True
-    elif a['mode'] == "single":
+    if a['mode'] == "single":
         output_json["function"] = 'setting'
-        output_json["main_wan" ]=a['main_iface']
+        output_json["main_iface" ]=a['main_wan']
         output_json["ping_target"] = a['ping_target']
         output_json["mode"] = a['mode']
-        # output_setting['status'] = True
-    else: 
-        # output_setting['status'] = False
-        output_setting['err_message'] = error_msg
     return output_json
 
 def info():
     jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
     a = json.load(jsonFile)
-    # while True:
+
     if a['mode'] == "fo": 
         if_info = subprocess.getoutput("ifconfig "+ a["main_iface"])
         result = {}
-        result["mode"] = "fo"
         line_list = if_info.split('\n')   
-        result["name"] = line_list[0].split()[0]
-        result["ip"] = line_list[1].split()[1]
-        result["mac_address"] = line_list[3].split()[1]
-        result["netmask"] = line_list[1].split()[3]
+        mode = "fo"
+        name = line_list[0].split()[0]
+        ip = line_list[1].split()[1]
+        mac_address = line_list[3].split()[1]
+        netmask = line_list[1].split()[3]
 
-        
         rx_start = subprocess.getoutput("cat /sys/class/net/"+a["main_iface"]+"/statistics/rx_bytes")
         tx_start = subprocess.getoutput("cat /sys/class/net/"+a["main_iface"]+"/statistics/tx_bytes")
-        time.sleep(3)
+        time.sleep(1)
         rx_end = subprocess.getoutput("cat /sys/class/net/"+a["main_iface"]+"/statistics/rx_bytes")
         tx_end = subprocess.getoutput("cat /sys/class/net/"+a["main_iface"]+"/statistics/tx_bytes")
-        result["rx_byte"] = int(rx_end)-int(rx_start)
-        result["tx_byte"] = int(tx_end)-int(tx_start)
+        rx_byte = int(rx_end)-int(rx_start)
+        tx_byte = int(tx_end)-int(tx_start)
+        result["main_iface"] = []
+        result["main_iface"].append({"name":name,"ip":ip,"mac_address":mac_address,"netmask":netmask,"traffic":{"tx":tx_byte,"rx": rx_byte},'status' : "Active"})
 
-
-    elif a['mode'] == "single":
+    if a['mode'] == "single":  #不太確定single mode時，info要吐什麼json
+        result = {}
         result["mode"] = "single"
-    else:
-        print('wrong')
+        if_info = subprocess.getoutput("ifconfig "+ a["main_iface"])
+        line_list = if_info.split('\n') 
+        result["name"] = line_list[0].split()[0]
+        time.sleep(1)
     return result
-    
-    
 
-
+    
 
 def current_config():
     jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
     a = json.load(jsonFile)
-    output_json = {}
+    
+    if a["mode"] == 'fo':
+        output_json = {}
+        output_json["mode"] = a['mode']
+        output_json["ping_target"] = a['ping_target']
+        output_json["fo"]=[]
+        output_json["fo"].append({"failback":"true","main_iface":a['main_iface'],"sec_iface":a['sec_iface'],"backup_iface":a['backup_iface'],"detection_mode":a["detection_mode"],"latency":a['latency']})
+        # output_json["status"] = True
+        output_json['single'] = 0
+    if a["mode"] == 'single':
+        output_json = {}
+        output_json["mode"] = a['mode']
+        output_json["ping_target"] = a['ping_target']
+        output_json["single"] = []
+        output_json["single"].append({"main_iface":a['main_iface']})
+        # output_json["status"] = True
+        output_json["fo"]=0
+
+
+    return output_json
+
+
 
 if __name__ == '__main__':
 
@@ -120,6 +133,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, filename='/var/log/failover.log', format=LOGGING_FORMAT, datefmt=DATE_FORMAT)
     input_json = str_to_json(sys.argv[1])  
 
+#===========================================================#
     if input_json['function'] == 'supported':
         output_json = {}  
         try:
@@ -133,7 +147,7 @@ if __name__ == '__main__':
             output_json['status'] = True
             
         except:
-            error_msg = "nono, something is wrong"
+            error_msg = "supported is wrong"
             output_json['status'] = False
             output_json['err_message'] = error_msg
 
@@ -151,7 +165,7 @@ if __name__ == '__main__':
             output_json = setting()
             output_setting['status'] = True
         except:
-            error_msg = "Something is wrong"
+            error_msg = "Setting is wrong"
             output_setting['status'] = False
             output_setting['err_message'] = error_msg
         sys.stdout.write(json_to_str(output_setting))
@@ -163,14 +177,12 @@ if __name__ == '__main__':
 #===========================================================#
     if input_json['function'] == 'info':
         while True:
-            i = info()
             output_json = {}  
             try: 
-                output_json["mode"] = i["mode"]
-                output_json["main_iface"] = []
-                output_json["main_iface"].append({"name":i["name"],"ip":i["ip"],"mac_address":i["mac_address"],"netmask":i["netmask"],"traffic":{"tx":i["tx_byte"],"rx": i["rx_byte"]},'status' : "Active"})
+                output_json = info()
+                output_json['status'] = True
             except:
-                error_msg = "nono, something wrong"
+                error_msg = "info is wrong"
                 output_json['status'] = False
                 output_json['err_message'] = error_msg
                 break
@@ -179,6 +191,33 @@ if __name__ == '__main__':
             with open("info.json", "w") as f:
                 f.write(json.dumps(output_json))
 
+#===========================================================#
+    if input_json['function'] == 'current_config': 
+        jsonFile_b = open('/home/pp/linux_bridge_PR/5Gjump/current_function.json','r')
+        b = json.load(jsonFile_b)
+        a = {}
+        try:
+            a = current_config()
+            b['mode'] = a['mode']
+            if a['fo'] != 0:
+                b['fo']["main_iface"] = a['fo'][0]['main_iface']
+                b['fo']["sec_iface"] = a['fo'][0]['sec_iface']
+                b['fo']["backup_iface"] = a['fo'][0]['backup_iface']
+                b['fo']["detection_mode"] = a['fo'][0]['detection_mode']
+                b['fo']["latency"]['threshold'] = a['fo'][0]['latency']['threshold']
+                b['fo']["latency"]['detection_period'] = a['fo'][0]['latency']['detection_period'] 
+            if a['single'] != 0:
+                b['single']["main_iface"] = a['single'][0]['main_iface']
+            b['status'] = True
+        except:
+            error_msg = "current_config is wrong"
+            b['status'] = False
+            b['err_message'] = error_msg
+        sys.stdout.write(json_to_str(b))
+        sys.stdout.flush()
+
+        with open("current_function_01.json", "w") as f:
+            f.write(json.dumps(b))
 
 
 
