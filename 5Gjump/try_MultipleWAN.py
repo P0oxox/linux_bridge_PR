@@ -63,27 +63,26 @@ def setting():
 def info():
     jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
     a = json.load(jsonFile)
+    # while True:
     if a['mode'] == "fo": 
         if_info = subprocess.getoutput("ifconfig "+ a["main_iface"])
         result = {}
         result["mode"] = "fo"
-        line_list = if_info.split('\n')
-        # name = line_list[0].split()[0]
-        # ip = line_list[1].split()[1]
-        # mac address = line_list[3].split()[1]
-        # netmask = line_list[1].split()[3]
-
-        # result["main_iface"].append({"name":name})
-        # result["main_iface"].append({"ip":line_list[1].split()[1]})
-        # result["main_iface"].append({"mac_address":line_list[3].split()[1]})
-        # result["main_iface"].append({"netmask":line_list[1].split()[3]})
-        # result["main_iface"].append({"traffic":"to do"})
-
-        
+        line_list = if_info.split('\n')   
         result["name"] = line_list[0].split()[0]
         result["ip"] = line_list[1].split()[1]
         result["mac_address"] = line_list[3].split()[1]
         result["netmask"] = line_list[1].split()[3]
+
+        
+        rx_start = subprocess.getoutput("cat /sys/class/net/"+a["main_iface"]+"/statistics/rx_bytes")
+        tx_start = subprocess.getoutput("cat /sys/class/net/"+a["main_iface"]+"/statistics/tx_bytes")
+        time.sleep(3)
+        rx_end = subprocess.getoutput("cat /sys/class/net/"+a["main_iface"]+"/statistics/rx_bytes")
+        tx_end = subprocess.getoutput("cat /sys/class/net/"+a["main_iface"]+"/statistics/tx_bytes")
+        result["rx_byte"] = int(rx_end)-int(rx_start)
+        result["tx_byte"] = int(tx_end)-int(tx_start)
+
 
     elif a['mode'] == "single":
         result["mode"] = "single"
@@ -181,31 +180,22 @@ if __name__ == '__main__':
             f.write(json.dumps(output_setting))
 #===========================================================#
     if input_json['function'] == 'info':
-        i = info()
-        print("i=",i["mac_address"],"..")
-        output_json = {}  
-        try: 
-            output_json["mode"] = i["mode"]
-            output_json["main_iface"] = []
-            output_json["main_iface"].append({"name":i["name"],"ip":i["ip"],"mac_address":i["mac_address"],"netmask":i["netmask"],'status' : "Active"})
-            # output_json["main_iface"].append({}) 
-            # output_json["main_iface"].append({})
-            # output_json["main_iface"].append({]})
-            output_json["main_iface"].append({"traffic":"to do"})
-
-
-            
-
-        except:
-            error_msg = "nono, something wrong"
-            output_json['status'] = False
-            output_json['err_message'] = error_msg
-
-
-        sys.stdout.write(json_to_str(output_json))
-        sys.stdout.flush()
-        with open("info.json", "w") as f:
-            f.write(json.dumps(output_json))
+        while True:
+            i = info()
+            output_json = {}  
+            try: 
+                output_json["mode"] = i["mode"]
+                output_json["main_iface"] = []
+                output_json["main_iface"].append({"name":i["name"],"ip":i["ip"],"mac_address":i["mac_address"],"netmask":i["netmask"],"traffic":{"tx":i["tx_byte"],"rx": i["rx_byte"]},'status' : "Active"})
+            except:
+                error_msg = "nono, something wrong"
+                output_json['status'] = False
+                output_json['err_message'] = error_msg
+                break
+            sys.stdout.write(json_to_str(output_json))
+            sys.stdout.flush()
+            with open("info.json", "w") as f:
+                f.write(json.dumps(output_json))
 
 
 

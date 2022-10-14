@@ -21,10 +21,10 @@ import time
 # print("enp0s10 rx: "+str(int(enp0s10_rx_end)-int(enp0s10_rx_start))+"  bytes")
 
 
-enp0s10_rx_start = subprocess.getoutput("cat /sys/class/net/enp0s10/statistics/rx_bytes")
-enp0s10_tx_start = subprocess.getoutput("cat /sys/class/net/enp0s10/statistics/tx_bytes")
+enp0s10_rx_start = subprocess.getoutput("cat /sys/class/net/enp0s8/statistics/rx_bytes")
+enp0s10_tx_start = subprocess.getoutput("cat /sys/class/net/enp0s8/statistics/tx_bytes")
 time.sleep(1)
-enp0s10_rx_end = subprocess.getoutput("cat /sys/class/net/enp0s10/statistics/rx_bytes")
-enp0s10_tx_end = subprocess.getoutput("cat /sys/class/net/enp0s10/statistics/tx_bytes")
-print("enp0s10 rx: "+str(int(enp0s10_rx_end)-int(enp0s10_rx_start))+"  bytes")
-print("enp0s10 tx: "+str(int(enp0s10_tx_end)-int(enp0s10_tx_start))+"  bytes")
+enp0s10_rx_end = subprocess.getoutput("cat /sys/class/net/enp0s8/statistics/rx_bytes")
+enp0s10_tx_end = subprocess.getoutput("cat /sys/class/net/enp0s8/statistics/tx_bytes")
+print("enp0s8 rx: "+str(int(enp0s10_rx_end)-int(enp0s10_rx_start))+"  bytes")
+print("enp0s8 tx: "+str(int(enp0s10_tx_end)-int(enp0s10_tx_start))+"  bytes")
