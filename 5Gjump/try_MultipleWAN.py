@@ -50,15 +50,29 @@ class supported():
 def setting():
     jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/setting_fo.json','r')
     a = json.load(jsonFile)
-    if a['mode'] == "fo": 
-        # os.system() 啟動systemd 
-        
-        print('Now is fo mode, start systemd. <還沒寫好> ')
+    output_json = {}
+    output_setting = {}
+    if a['mode'] == "fo" :
+        output_json["function"] = 'setting'
+        output_json["mode"] = a['mode']
+        output_json["ping_target"] = a['ping_target']
+        output_json["failback"]=True
+        output_json["main_iface" ]=a['main_iface']
+        output_json["sec_iface" ]=a['sec_iface']
+        output_json["backup_iface"]=a['backup_iface']
+        output_json["detection_mode"] = a['detection_mode']
+        output_json["latency"] = a['latency']
+        # output_setting['status'] = True
     elif a['mode'] == "single":
-        
-        print('Now is single mode, stop systemd. <還沒寫好> ')
-    else:
-        print('wrong')
+        output_json["function"] = 'setting'
+        output_json["main_wan" ]=a['main_iface']
+        output_json["ping_target"] = a['ping_target']
+        output_json["mode"] = a['mode']
+        # output_setting['status'] = True
+    else: 
+        # output_setting['status'] = False
+        output_setting['err_message'] = error_msg
+    return output_json
 
 def info():
     jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
@@ -106,17 +120,11 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, filename='/var/log/failover.log', format=LOGGING_FORMAT, datefmt=DATE_FORMAT)
     input_json = str_to_json(sys.argv[1])  
 
-    ###
-    all_wan = supported.find_WAN()  # read Json file to find all WAN
-    ip_wan = supported.if_has_IP(all_wan)  # find who has ip in all WAN
-    # setting() # fo mode or single mode
-
-
-    ###
-
     if input_json['function'] == 'supported':
         output_json = {}  
         try:
+            all_wan = supported.find_WAN()  # read Json file to find all WAN
+            ip_wan = supported.if_has_IP(all_wan)  # find who has ip in all WAN
             output_json["ifaces"] = []
             
             en_to_eth,eth_to_en = iface_name()
@@ -124,7 +132,6 @@ if __name__ == '__main__':
                 output_json["ifaces"].append({"text":en_to_eth[iface],"value":iface})
             output_json['status'] = True
             
-
         except:
             error_msg = "nono, something is wrong"
             output_json['status'] = False
@@ -137,41 +144,16 @@ if __name__ == '__main__':
             f.write(json.dumps(output_json))
 
 #===========================================================#
-    if input_json['function'] == 'setting':
-        jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/setting_fo.json','r')
-        a = json.load(jsonFile)
+    if input_json['function'] == 'setting': 
         output_json = {}
         output_setting = {}
         try:
-            if a['mode'] == "fo" :
-                output_json["function"] = 'setting'
-                output_json["mode"] = a['mode']
-                output_json["ping_target"] = a['ping_target']
-
-                # output_json["fo"] = []
-                output_json["failback" ]=True
-                output_json["main_iface" ]=a['main_iface']
-                output_json["sec_iface" ]=a['sec_iface']
-                output_json["backup_iface"]=a['backup_iface']
-                output_json["detection_mode"] = a['detection_mode']
-                output_json["latency"] = a['latency']
-                output_setting['status'] = True
-            elif a['mode'] == "single":
-                output_json["function"] = 'setting'
-                output_json["main_wan" ]=a['main_iface']
-                output_json["ping_target"] = a['ping_target']
-                output_json["mode"] = a['mode']
-                output_setting['status'] = True
-            else: #a['mode'] == "single"
-                output_setting['status'] = False
-                output_setting['err_message'] = error_msg
+            output_json = setting()
+            output_setting['status'] = True
         except:
             error_msg = "Something is wrong"
             output_setting['status'] = False
             output_setting['err_message'] = error_msg
-
-
-        # sys.stdout.write(json_to_str(output_json))
         sys.stdout.write(json_to_str(output_setting))
         sys.stdout.flush()
         with open("current_config.json", "w") as f:

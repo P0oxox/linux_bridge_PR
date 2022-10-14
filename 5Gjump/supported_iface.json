@@ -1,1 +1,1 @@
-{"mode": "fo", "name": "enp0s8:", "ip": "172.30.1.212", "mac address": "08:00:27:c6:10:08", "netmask": "255.255.255.0", "status": true}
+{"ifaces": [{"text": "Mobile Network", "value": "enp0s3"}, {"text": "Wi-Fi", "value": "enp0s8"}, {"text": "NR", "value": "enp0s9"}, {"text": "LTE", "value": "enp0s10"}], "status": true}
