@@ -60,5 +60,3 @@ if  __name__ == "__main__":
 #     for i in range(len(all_wan)):
 #         if_info = subprocess.getoutput("ifconfig "+ all_wan[i])
 #         print(supported.show_ip(if_info))
-
-
