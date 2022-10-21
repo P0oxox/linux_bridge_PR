@@ -77,7 +77,6 @@ def setting():
 def info():
     jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
     a = json.load(jsonFile)
-    # while True:
     if a['mode'] == "fo": 
         if_info = subprocess.getoutput("ifconfig "+ a["main_iface"])
         result = {}

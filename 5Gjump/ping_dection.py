@@ -7,7 +7,7 @@ import time
 from ping3 import ping, verbose_ping
 from datetime import datetime
 
-path_to_file = "/home/pp/5gJUMP/ping3.log"
+path_to_file = "/home/pp/linux_bridge_PR/5gJUMP/ping3.log"
 host = "8.8.8.8"
 interface = ["enp0s3","enp0s8","enp0s9","enp0s10"]
 can_use_WANs = []

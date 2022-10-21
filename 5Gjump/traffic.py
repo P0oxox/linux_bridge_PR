@@ -6,6 +6,7 @@ import sys
 import logging
 import subprocess 
 import time
+import math
 
 # dirpath = r"/sys/class/net"
 # print("列出當前資料夾所有檔案和資料夾:\n",os.listdir(dirpath))
@@ -37,11 +38,12 @@ enp0s9_rx_end = subprocess.getoutput("cat /sys/class/net/enp0s9/statistics/rx_by
 enp0s9_tx_end = subprocess.getoutput("cat /sys/class/net/enp0s9/statistics/tx_bytes")
 enp0s10_rx_end = subprocess.getoutput("cat /sys/class/net/enp0s10/statistics/rx_bytes")
 enp0s10_tx_end = subprocess.getoutput("cat /sys/class/net/enp0s10/statistics/tx_bytes")
-print("enp0s3 rx: "+str(int(enp0s3_rx_end)-int(enp0s3_rx_start))+"  bytes")
-print("enp0s3 tx: "+str(int(enp0s3_tx_end)-int(enp0s3_tx_start))+"  bytes")
-print("enp0s8 rx: "+str(int(enp0s10_rx_end)-int(enp0s10_rx_start))+"  bytes")
-print("enp0s8 tx: "+str(int(enp0s10_tx_end)-int(enp0s10_tx_start))+"  bytes")
-print("enp0s9 rx: "+str(int(enp0s9_rx_end)-int(enp0s9_rx_start))+"  bytes")
-print("enp0s9 tx: "+str(int(enp0s9_tx_end)-int(enp0s9_tx_start))+"  bytes")
-print("enp0s10 rx: "+str(int(enp0s10_rx_end)-int(enp0s10_rx_start))+"  bytes")
-print("enp0s10 tx: "+str(int(enp0s10_tx_end)-int(enp0s10_tx_start))+"  bytes")
+print("enp0s3 rx: "+str((int(enp0s3_rx_end)-int(enp0s3_rx_start))*(0.000008))+"  Mbps")
+print("enp0s3 tx: "+str((int(enp0s3_tx_end)-int(enp0s3_tx_start))*(0.000008))+"  Mbps")
+print("enp0s8 rx: "+str((int(enp0s8_rx_end)-int(enp0s8_rx_start))*(0.000008))+"  Mbps")
+print("enp0s8 tx: "+str((int(enp0s8_tx_end)-int(enp0s8_tx_start))*(0.000008))+"  Mbps")
+print("enp0s9 rx: "+str((int(enp0s9_rx_end)-int(enp0s9_rx_start))*(0.000008))+"  Mbps")
+print("enp0s9 tx: "+str((int(enp0s9_tx_end)-int(enp0s9_tx_start))*(0.000008))+"  Mbps")
+print("enp0s10 rx: "+str((int(enp0s10_rx_end)-int(enp0s10_rx_start))*(0.000008))+"  Mbps")
+print("enp0s10 tx: "+str((int(enp0s10_tx_end)-int(enp0s10_tx_start))*(0.000008))+"  Mbps")
+
