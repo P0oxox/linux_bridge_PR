@@ -1,4 +1,4 @@
-python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'true',"main_iface": "enp0s10","sec_iface": "","backup_iface":"","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "2" }}'
+python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'true',"main_iface": "enp0s10","sec_iface": "","backup_iface":"enp0s3","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "2" }}'
 
 
 python3 try_MultipleWAN.py '{"function":"setting","main_wan":"enp0s10","ping_target": "8.8.8.8","mode":"single"}'
