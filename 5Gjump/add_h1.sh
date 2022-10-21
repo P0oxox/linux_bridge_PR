@@ -24,4 +24,5 @@ iptables -t nat -A POSTROUTING -s 192.168.0.0/24 -o enp0s8 -j MASQUERADE
 ip netns exec h1 ip route add default via 192.168.0.1
 # ip netns exec h1 ifconfig
 
-#iptables -t nat -L -n -v
+
+#iptables -t nat -v -L POSTROUTING -n --line-number

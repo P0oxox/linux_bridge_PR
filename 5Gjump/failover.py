@@ -49,6 +49,9 @@ def choose_status():
             os.system('ifmetric {0} 2'.format(a["fo"]["backup_iface"]))
             for i in range(len(no_use)):
                 os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
+            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
+            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
+
             # os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
             
             print("three")
