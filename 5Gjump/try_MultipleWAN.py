@@ -34,7 +34,6 @@ class supported():
         all_wan = []
         for i in range(len(a["inter_face"])):
             all_wan.append(a["inter_face"][i]['value'])
-        # print(all_wan)
         return all_wan
     # check the wan whether has IP
     def if_has_IP(WANs):
@@ -63,7 +62,6 @@ def setting():
     
     output_json1.update(output_json2)
     output_json1.update(output_json3)
-
     return output_json1
 
 
@@ -87,12 +85,12 @@ def info():
             tx_end = subprocess.getoutput("cat /sys/class/net/"+a["fo"]["main_iface"]+"/statistics/tx_bytes")
             rx_mbps = (int(rx_end)-int(rx_start))*(0.000008)
             tx_mbps = (int(tx_end)-int(tx_start))*(0.000008)
-            second = ping("8.8.8.8", interface = a["fo"]["main_iface"])
-            if second is None :
-                status = "Fail"
-            else:
-                status = "Active"
-            result["main_iface"] = {"name":name,"ip":ip,"mac_address":mac_address,"netmask":netmask,"traffic":{"tx":tx_mbps,"rx": rx_mbps},'status' : status}       
+            # second = ping("8.8.8.8", interface = a["fo"]["main_iface"])
+            # if second is None :
+            #     status = "Fail"
+            # else:
+            #     status = "Active"
+            result["main_iface"] = {"name":name,"ip":ip,"mac_address":mac_address,"netmask":netmask,"traffic":{"tx":tx_mbps,"rx": rx_mbps}}  # 'status' : status     
         else:
             result["main_iface"] = {"name":"none"}
         #===========================================================
@@ -111,11 +109,11 @@ def info():
             rx_mbps = (int(rx_end)-int(rx_start))*(0.000008)
             tx_mbps = (int(tx_end)-int(tx_start))*(0.000008)
             second = ping("8.8.8.8", interface = a["fo"]["sec_iface"])
-            if second is None :
-                status = "Fail"
-            else:
-                status = "Idle"
-            result["sec_iface"] = {"name":name,"ip":ip,"mac_address":mac_address,"netmask":netmask,"traffic":{"tx":tx_mbps,"rx": rx_mbps},'status' : status}       
+            # if second is None :
+            #     status = "Fail"
+            # else:
+            #     status = "Idle"
+            result["sec_iface"] = {"name":name,"ip":ip,"mac_address":mac_address,"netmask":netmask,"traffic":{"tx":tx_mbps,"rx": rx_mbps}}    #   ,'status' : status
         else:
             result["sec_iface"] = {"name":"none"}
         #=======================================================
@@ -133,12 +131,12 @@ def info():
             tx_end = subprocess.getoutput("cat /sys/class/net/"+a["fo"]["backup_iface"]+"/statistics/tx_bytes")
             rx_mbps = (int(rx_end)-int(rx_start))*(0.000008)
             tx_mbps = (int(tx_end)-int(tx_start))*(0.000008)
-            second = ping("8.8.8.8", interface = a["fo"]["backup_iface"])
-            if second is None :
-                status = "Fail"
-            else:
-                status = "Idle"
-            result["backup_iface"] = {"name":name,"ip":ip,"mac_address":mac_address,"netmask":netmask,"traffic":{"tx":tx_mbps,"rx": rx_mbps},'status' : status}       
+            # second = ping("8.8.8.8", interface = a["fo"]["backup_iface"])
+            # if second is None :
+            #     status = "Fail"
+            # else:
+            #     status = "Idle"
+            result["backup_iface"] = {"name":name,"ip":ip,"mac_address":mac_address,"netmask":netmask,"traffic":{"tx":tx_mbps,"rx": rx_mbps}}       #,'status' : status
         else:
             result["backup_iface"] = {"name":"none"}
 

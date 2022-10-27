@@ -10,17 +10,23 @@ from ping3 import ping, verbose_ping
 from datetime import datetime
 
 ifaces = ['enp0s3','enp0s8','enp0s9','enp0s10']
-jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
-a = json.load(jsonFile)
+current_config_jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
+a = json.load(current_config_jsonFile)
+
+jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/info.json','r')
+info_json = json.load(jsonFile)
+# print(info_json["main_iface"]["name"])
+
 no_use = []
 for i in ifaces:
     if i != a["fo"]["main_iface"] and i != a["fo"]["sec_iface"] and i != a["fo"]["backup_iface"]:
         no_use.append(i)
-
+# output_json = []
 
 def choose_status():
     threshold = a["fo"]['latency']["threshold"]
     detection_period = a["fo"]['latency']["detection_period"]
+ 
 
     while True:
         if "enp" in a["fo"]["main_iface"]:
@@ -51,6 +57,12 @@ def choose_status():
             if a["fo"]["main_iface"] not in nat_show:
                 os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
 
+            # if "enp" in a["fo"]["main_iface"]:
+            info_json["main_iface"]["status"] = "Active"
+            info_json["sec_iface"]["status"] = "Idle"
+            info_json["backup_iface"]["status"] = "Idle"
+            
+
 
 
         if ping_main is None and ping_sec and ping_backup :
@@ -65,9 +77,13 @@ def choose_status():
             os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
             os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
             nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
-            # print(nat_show)
             if a["fo"]["sec_iface"] not in nat_show:
                 os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
+            
+            if "en" in a["fo"]["main_iface"]:
+                info_json["main_iface"]["status"] = "Fail"
+            info_json["sec_iface"]["status"] = "Active"
+            info_json["backup_iface"]["status"] = "Idle"
 
 
         if ping_main and ping_sec is None and ping_backup :
@@ -81,11 +97,16 @@ def choose_status():
             os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
             os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
             nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
-            # print(nat_show)
             if a["fo"]["main_iface"] not in nat_show:
                 os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
             
+
+            info_json["main_iface"]["status"] = "Active"
+            if "en" in a["fo"]["sec_iface"]:
+                info_json["sec_iface"]["status"] = "Fail"
+            info_json["backup_iface"]["status"] = "Idle"
             print("three")
+
 
 
 
@@ -105,6 +126,11 @@ def choose_status():
                 os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
 
 
+            info_json["main_iface"]["status"] = "Active"
+            info_json["sec_iface"]["status"] = "Idle"
+            if "en" in a["fo"]["backup_iface"]:
+                info_json["backup_iface"]["status"] = "Fail"
+
         if ping_main is None and ping_sec is None and ping_backup :
             wan_status = {"main_iface":"Fail", "sec_iface": "Fail", "backup_iface":"Active"}
             print("five")
@@ -116,10 +142,17 @@ def choose_status():
             os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
             os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
             nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
-            # print(nat_show)
             if a["fo"]["backup_iface"] not in nat_show:
                 os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
-            
+
+            if "en" in a["fo"]["main_iface"]:
+                info_json["main_iface"]["status"] = "Fail"
+            if "en" in a["fo"]["sec_iface"]:
+                info_json["sec_iface"]["status"] = "Fail"
+            # if "en" in a["fo"]["backup_iface"]:
+            info_json["backup_iface"]["status"] = "Active"
+
+
 
         if ping_main and ping_sec is None and ping_backup is None:
             wan_status = {"main_iface":"Active", "sec_iface": "Fail", "backup_iface":"Fail"}
@@ -132,9 +165,16 @@ def choose_status():
             os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
             os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
             nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
-            # print(nat_show)
             if a["fo"]["main_iface"] not in nat_show:
                 os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
+
+            # print(info_json["main_iface"])
+            info_json["main_iface"]["status"] = "Active"
+            if "en" in a["fo"]["sec_iface"]:
+                info_json["sec_iface"]["status"] = "Fail"
+            if "en" in a["fo"]["backup_iface"]:
+                info_json["backup_iface"]["status"] = "Fail"
+
 
 
         if ping_main is None and ping_sec and ping_backup is None :
@@ -149,23 +189,35 @@ def choose_status():
             os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
             os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
             nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
-            # print(nat_show)
+
             if a["fo"]["sec_iface"] not in nat_show:
                 os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
+            if "en" in a["fo"]["main_iface"]:
+                info_json["main_iface"]["status"] = "Fail"
+
+            info_json["sec_iface"]["status"] = "Active"
+            if "en" in a["fo"]["backup_iface"]:
+                info_json["backup_iface"]["status"] = "Fail"
 
         if ping_main is None and ping_sec is None and ping_backup is None :
             wan_status = {"main_iface":"Fail", "sec_iface": "Fail", "backup_iface":"Fail"}
             print("eight")     
+            
 
+            
 
+        return info_json
 
         time.sleep(int(detection_period))
 
 
 
-
 if __name__ == '__main__':
-    choose_status()
+    # input_json = str_to_json(sys.argv[1])  
+    # if input_json['failback'] == 'true':
+    info_status = choose_status()
+    with open("info.json", "w") as f:
+        f.write(json.dumps(info_status))
     
 
 
