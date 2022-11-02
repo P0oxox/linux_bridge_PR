@@ -54,8 +54,7 @@ def setting():
     output_json2 = {}
     if str_2_dic["mode"]=="fo":    
         output_json2["fo"] = {"failback": str_2_dic["failback"],"main_iface":str_2_dic["main_iface"],"sec_iface":str_2_dic["sec_iface"],"backup_iface":str_2_dic["backup_iface"],"detection_mode":str_2_dic["detection_mode"] }
-        output_json2["fo"]["latency"] = {"threshold":str_2_dic["latency"]["threshold"],"detection_period":str_2_dic["latency"]["detection_period"]}
-        
+        output_json2["fo"]["latency"] = {"threshold":str_2_dic["latency"]["threshold"],"detection_period":str_2_dic["latency"]["detection_period"]}       
     output_json3 = {}
     if str_2_dic["mode"]=="single":  
         output_json3["single"] = {"main_iface": str_2_dic["main_wan"]}
@@ -193,7 +192,10 @@ if __name__ == '__main__':
         output_setting = {}
         try:
             output_json = setting()
+            b['mode'] = output_json['mode']
+            b['ping_target'] = output_json['ping_target']
             if output_json["mode"] == 'fo':
+                b['fo']["failback"] = output_json['fo']['failback']
                 b['fo']["main_iface"] = output_json['fo']['main_iface']
                 b['fo']["sec_iface"] = output_json['fo']['sec_iface']
                 b['fo']["backup_iface"] = output_json['fo']['backup_iface']
@@ -216,6 +218,8 @@ if __name__ == '__main__':
             f.write(json.dumps(output_setting))
     #====================='info'================================#
     if input_json['function'] == 'info':
+        # jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
+        # b = json.load(jsonFile)
         while True:
             output_json = {}  
             try: 
@@ -227,6 +231,7 @@ if __name__ == '__main__':
                 output_json['err_message'] = error_msg
                 break
             sys.stdout.write(json_to_str(output_json))
+            sys.stdout.write("\n")
             sys.stdout.flush()
             with open("info.json", "w") as f:
                 f.write(json.dumps(output_json))
