@@ -7,6 +7,7 @@ import sys
 import logging
 import subprocess 
 from ping3 import ping, verbose_ping
+# from failover import choose_status
 
 def iface_name():
     en_to_eth = {}
@@ -67,6 +68,8 @@ def setting():
 def info():
     jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
     a = json.load(jsonFile)
+    status_ = open('/home/pp/linux_bridge_PR/5Gjump/failover','r')
+    b = json.load(status_)
     if a['mode'] == "fo": 
         result = {}
         result["mode"]="fo"
@@ -84,12 +87,8 @@ def info():
             tx_end = subprocess.getoutput("cat /sys/class/net/"+a["fo"]["main_iface"]+"/statistics/tx_bytes")
             rx_mbps = (int(rx_end)-int(rx_start))*(0.000008)
             tx_mbps = (int(tx_end)-int(tx_start))*(0.000008)
-            # second = ping("8.8.8.8", interface = a["fo"]["main_iface"])
-            # if second is None :
-            #     status = "Fail"
-            # else:
-            #     status = "Active"
-            result["main_iface"] = {"name":name,"ip":ip,"mac_address":mac_address,"netmask":netmask,"traffic":{"tx":tx_mbps,"rx": rx_mbps}}  # 'status' : status     
+            status = b["main_iface"]["status"]
+            result["main_iface"] = {"name":name,"ip":ip,"mac_address":mac_address,"netmask":netmask,"traffic":{"tx":tx_mbps,"rx": rx_mbps},'status' : status}  #      
         else:
             result["main_iface"] = {"name":"none"}
         #===========================================================
@@ -108,11 +107,8 @@ def info():
             rx_mbps = (int(rx_end)-int(rx_start))*(0.000008)
             tx_mbps = (int(tx_end)-int(tx_start))*(0.000008)
             second = ping("8.8.8.8", interface = a["fo"]["sec_iface"])
-            # if second is None :
-            #     status = "Fail"
-            # else:
-            #     status = "Idle"
-            result["sec_iface"] = {"name":name,"ip":ip,"mac_address":mac_address,"netmask":netmask,"traffic":{"tx":tx_mbps,"rx": rx_mbps}}    #   ,'status' : status
+            status = b["sec_iface"]["status"]
+            result["sec_iface"] = {"name":name,"ip":ip,"mac_address":mac_address,"netmask":netmask,"traffic":{"tx":tx_mbps,"rx": rx_mbps},'status' : status }    #  
         else:
             result["sec_iface"] = {"name":"none"}
         #=======================================================
@@ -130,12 +126,8 @@ def info():
             tx_end = subprocess.getoutput("cat /sys/class/net/"+a["fo"]["backup_iface"]+"/statistics/tx_bytes")
             rx_mbps = (int(rx_end)-int(rx_start))*(0.000008)
             tx_mbps = (int(tx_end)-int(tx_start))*(0.000008)
-            # second = ping("8.8.8.8", interface = a["fo"]["backup_iface"])
-            # if second is None :
-            #     status = "Fail"
-            # else:
-            #     status = "Idle"
-            result["backup_iface"] = {"name":name,"ip":ip,"mac_address":mac_address,"netmask":netmask,"traffic":{"tx":tx_mbps,"rx": rx_mbps}}       #,'status' : status
+            status = b["backup_iface"]["status"]
+            result["backup_iface"] = {"name":name,"ip":ip,"mac_address":mac_address,"netmask":netmask,"traffic":{"tx":tx_mbps,"rx": rx_mbps},'status' : status}       #
         else:
             result["backup_iface"] = {"name":"none"}
 
@@ -218,13 +210,10 @@ if __name__ == '__main__':
             f.write(json.dumps(output_setting))
     #====================='info'================================#
     if input_json['function'] == 'info':
-        # jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
-        # b = json.load(jsonFile)
         while True:
             output_json = {}  
             try: 
                 output_json = info()
-                # output_json['status'] = True
             except:
                 error_msg = "info is wrong"
                 output_json['status'] = False

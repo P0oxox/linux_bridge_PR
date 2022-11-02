@@ -1,13 +1,12 @@
-python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'false',"main_iface": "enp0s3","sec_iface": "enp0s8","backup_iface":"","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "2" }}'
-
-
+python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'false',"main_iface": "enp0s8","sec_iface": "enp0s3","backup_iface":"","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "2" }}'
 python3 try_MultipleWAN.py '{"function":"setting","main_wan":"enp0s8","ping_target": "8.8.8.8","mode":"single"}'
-python3 try.py '{"function":"setting","main_wan":"enp0s10","ping_target": "8.8.8.8","mode":"single"}'
 
 
 
 
 
-python3 try.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'true',"main_iface": "enp0s10","sec_iface": "","backup_iface":"enp0s3","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "2" }}'
-python3 try.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","main_iface": "enp0s10","sec_iface": "","backup_iface":"enp0s3","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "2" }}'
-python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": False,"main_iface": "enp0s3","sec_iface": "enp0s8","backup_iface":"","detection_mode": "latency", "latency": { "threshold": "5", "detection_period": "5" }}'
+
+
+python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'false',"main_iface": "enp0s3","sec_iface": "enp0s8","backup_iface":"","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "3" }}'
+python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'false',"main_iface": "enp0s10","sec_iface": "","backup_iface":"enp0s8","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "2" }}'
+python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'false',"main_iface": "","sec_iface": "enp0s8","backup_iface":"enp0s3","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "5" }}'
