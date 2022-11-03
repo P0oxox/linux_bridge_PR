@@ -10,19 +10,7 @@ from ping3 import ping, verbose_ping
 from datetime import datetime
 
 ifaces = ['enp0s3','enp0s8','enp0s9','enp0s10']
-current_config_jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
-a = json.load(current_config_jsonFile)
 
-
-no_use = []
-for i in ifaces:
-    if i != a["fo"]["main_iface"] and i != a["fo"]["sec_iface"] and i != a["fo"]["backup_iface"]:
-        no_use.append(i)
-threshold = a["fo"]['latency']["threshold"]
-detection_period = a["fo"]['latency']["detection_period"]
-info_json = {"main_iface":{"status":''},"sec_iface":{"status":''},"backup_iface":{"status":''}}
-
-# class choose_status():
 def choose_status():
     if "enp" in a["fo"]["main_iface"]:
         ping_main = ping("8.8.8.8", interface = a["fo"]["main_iface"],timeout = int(threshold))
@@ -152,7 +140,6 @@ def choose_status():
 
 
     if ping_main and ping_sec is None and ping_backup is None:
-        # wan_status = {"main_iface":"Active", "sec_iface": "Fail", "backup_iface":"Fail"}
         info_json["main_iface"]["status"] = "Active"
         if "en" in a["fo"]["sec_iface"]:
             info_json["sec_iface"]["status"] = "Fail"
@@ -175,7 +162,6 @@ def choose_status():
 
 
     if ping_main is None and ping_sec and ping_backup is None :
-        # wan_status = {"main_iface":"Fail", "sec_iface": "Active", "backup_iface":"Fail"}
         if "en" in a["fo"]["main_iface"]:
             info_json["main_iface"]["status"] = "Fail"
 
@@ -210,17 +196,22 @@ path_to_file = "/home/pp/linux_bridge_PR/5Gjump/failover"
 if __name__ == '__main__':
 
     while True:
+        info_json = {"main_iface":{"status":''},"sec_iface":{"status":''},"backup_iface":{"status":''}}
+        current_config_jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
+        a = json.load(current_config_jsonFile)
+
+        no_use = []
+        for i in ifaces:
+            if i != a["fo"]["main_iface"] and i != a["fo"]["sec_iface"] and i != a["fo"]["backup_iface"]:
+                no_use.append(i)
+        threshold = a["fo"]['latency']["threshold"]
+        detection_period = a["fo"]['latency']["detection_period"]
+
         info_status = choose_status()
         print(info_status)
-        print(a["fo"]["main_iface"])
-        print(a["fo"]["sec_iface"])
-        print(a["fo"]["backup_iface"])
-        # with open(path_to_file, "w") as f:
-            # f.write(json.dumps(info_status))
+
+        with open(path_to_file, "w") as f:
+            f.write(json.dumps(info_status))
+
         time.sleep(int(detection_period))
-
-
-    
-
-
 

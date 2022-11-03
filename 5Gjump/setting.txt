@@ -6,7 +6,18 @@ python3 try_MultipleWAN.py '{"function":"setting","main_wan":"enp0s8","ping_targ
 
 
 
-
+# four
 python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'false',"main_iface": "enp0s3","sec_iface": "enp0s8","backup_iface":"","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "3" }}'
+
+# three
 python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'false',"main_iface": "enp0s10","sec_iface": "","backup_iface":"enp0s8","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "2" }}'
-python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'false',"main_iface": "","sec_iface": "enp0s8","backup_iface":"enp0s3","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "5" }}'
+
+# two
+python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'false',"main_iface": "","sec_iface": "enp0s8","backup_iface":"enp0s3","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "2" }}'
+
+
+
+failback=true
+python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'true',"main_iface": "enp0s3","sec_iface": "enp0s8","backup_iface":"","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "3" }}'
+python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'true',"main_iface": "enp0s10","sec_iface": "","backup_iface":"enp0s8","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "2" }}'
+python3 try_MultipleWAN.py '{"function":"setting", "mode": "fo","ping_target": "8.8.8.8","failback": 'true',"main_iface": "","sec_iface": "enp0s8","backup_iface":"enp0s3","detection_mode": "latency", "latency": { "threshold": "1", "detection_period": "2" }}'
