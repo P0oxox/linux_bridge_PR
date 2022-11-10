@@ -1,1 +1,1 @@
-{"mode": "fo", "ping_target": "8.8.8.8", "fo": {"failback": true, "main_iface": "enp0s8", "sec_iface": "enp0s9", "backup_iface": "enp0s10", "detection_mode": "latency", "latency": {"threshold": "1", "detection_period": "3"}}, "single": {"main_iface": "enp0s8"}, "status": true}
+{"mode": "fo", "ping_target": "8.8.8.8", "fo": {"failback": true, "main_iface": "", "sec_iface": "enp0s10", "backup_iface": "enp0s8", "detection_mode": "latency", "latency": {"threshold": "1", "detection_period": "2"}}, "single": {"main_iface": "enp0s8"}, "status": true}

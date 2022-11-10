@@ -10,4 +10,10 @@ sudo nmcli connection delete bridge-slave-br-eth3
 # brctl show
 
 
-#ip -o -4 route show to default | awk '{print $5}'   #這行可以直接抓有ip的WAN
+#ip -o -4 route show to default | awk '{print $5}'   
+# sudo systemctl daemon-reload
+# sudo systemctl enable simple.service
+# sudo systemctl start simple.service
+
+# sudo systemctl stop simple.service
+# sudo systemctl status simple.service

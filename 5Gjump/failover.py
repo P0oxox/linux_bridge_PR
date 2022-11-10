@@ -8,11 +8,11 @@ import logging
 import subprocess 
 from ping3 import ping, verbose_ping
 from datetime import datetime
+import threading
 
 ifaces = ['enp0s3','enp0s8','enp0s9','enp0s10']
 def ping_main(): 
     if "enp" in a["fo"]["main_iface"]:
-        # ping_main = 0
         ping_main1 = ping("8.8.8.8", interface = a["fo"]["main_iface"],timeout = int(threshold))
         ping_main2 = ping("8.8.8.8", interface = a["fo"]["main_iface"],timeout = int(threshold))
         ping_main3 = ping("8.8.8.8", interface = a["fo"]["main_iface"],timeout = int(threshold))
@@ -27,7 +27,6 @@ def ping_main():
 
 def ping_sec():
     if "enp" in a["fo"]["sec_iface"]:
-        # ping_sec = 1
         ping_sec1 = ping("8.8.8.8", interface = a["fo"]["sec_iface"],timeout = int(threshold))
         ping_sec2 = ping("8.8.8.8", interface = a["fo"]["sec_iface"],timeout = int(threshold))
         ping_sec3 = ping("8.8.8.8", interface = a["fo"]["sec_iface"],timeout = int(threshold))
@@ -42,7 +41,6 @@ def ping_sec():
 
 def ping_backup():
     if "enp" in a["fo"]["backup_iface"]:
-        # ping_backup = 1
         ping_backup1 = ping("8.8.8.8", interface = a["fo"]["backup_iface"],timeout = int(threshold))
         ping_backup2 = ping("8.8.8.8", interface = a["fo"]["backup_iface"],timeout = int(threshold))
         ping_backup3 = ping("8.8.8.8", interface = a["fo"]["backup_iface"],timeout = int(threshold))
@@ -86,19 +84,19 @@ def choose_status(ping_main, ping_sec, ping_backup):
         info_json["backup_iface"]["status"] = "Idle"
         print("two")
         if a['fo']["failback"] == True:
-            if info_json["main_iface"]["status"] == "Fail":
-                print("two failback")
-                os.system('ifmetric {0} 3'.format(a["fo"]["main_iface"]))
-                os.system('ifmetric {0} 1'.format(a["fo"]["sec_iface"]))
-                os.system('ifmetric {0} 2'.format(a["fo"]["backup_iface"]))
-                for i in range(len(no_use)):
-                    os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
-                
-                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
-                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
-                nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
-                if a["fo"]["sec_iface"] not in nat_show:
-                    os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
+        # if info_json["main_iface"]["status"] == "Fail":
+            print("two failback")
+            os.system('ifmetric {0} 3'.format(a["fo"]["main_iface"]))
+            os.system('ifmetric {0} 1'.format(a["fo"]["sec_iface"]))
+            os.system('ifmetric {0} 2'.format(a["fo"]["backup_iface"]))
+            for i in range(len(no_use)):
+                os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
+            
+            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
+            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
+            nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
+            if a["fo"]["sec_iface"] not in nat_show:
+                os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
           
 
 
@@ -156,17 +154,18 @@ def choose_status(ping_main, ping_sec, ping_backup):
             info_json["sec_iface"]["status"] = "Fail"
         info_json["backup_iface"]["status"] = "Active"
         print("five")
-        if a['fo']["failback"] == True:  
-            os.system('ifmetric {0} 2'.format(a["fo"]["main_iface"]))
-            os.system('ifmetric {0} 3'.format(a["fo"]["sec_iface"]))
-            os.system('ifmetric {0} 1'.format(a["fo"]["backup_iface"]))
-            for i in range(len(no_use)):
-                os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
-            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
-            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
-            nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
-            if a["fo"]["backup_iface"] not in nat_show:
-                os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
+        # if a['fo']["failback"] == True:  
+        if info_json["main_iface"]["status"] == "Fail" or info_json["sec_iface"]["status"] == "Fail":
+                os.system('ifmetric {0} 2'.format(a["fo"]["main_iface"]))
+                os.system('ifmetric {0} 3'.format(a["fo"]["sec_iface"]))
+                os.system('ifmetric {0} 1'.format(a["fo"]["backup_iface"]))
+                for i in range(len(no_use)):
+                    os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
+                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
+                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
+                nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
+                if a["fo"]["backup_iface"] not in nat_show:
+                    os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
 
 
 
@@ -202,7 +201,8 @@ def choose_status(ping_main, ping_sec, ping_backup):
         if "en" in a["fo"]["backup_iface"]:
             info_json["backup_iface"]["status"] = "Fail"
         print("seven")
-        if a['fo']["failback"] == True:             
+        if a['fo']["failback"] == True:          
+        # if info_json["main_iface"]["status"] == "Fail":
             os.system('ifmetric {0} 3'.format(a["fo"]["main_iface"]))
             os.system('ifmetric {0} 1'.format(a["fo"]["sec_iface"]))
             os.system('ifmetric {0} 2'.format(a["fo"]["backup_iface"]))
@@ -228,7 +228,7 @@ path_to_file = "/home/pp/linux_bridge_PR/5Gjump/failover"
 if __name__ == '__main__':
 
     while True:
-        info_json = {"main_iface":{"status":'Idle'},"sec_iface":{"status":'Idle'},"backup_iface":{"status":'Idle'}}
+        info_json = {"main_iface":{"status":''},"sec_iface":{"status":''},"backup_iface":{"status":''}}
         current_config_jsonFile = open('/home/pp/linux_bridge_PR/5Gjump/current_config.json','r')
         a = json.load(current_config_jsonFile)
 
@@ -239,11 +239,15 @@ if __name__ == '__main__':
         threshold = a["fo"]['latency']["threshold"]
         detection_period = a["fo"]['latency']["detection_period"]
 
+        # ping_main1 = threading.Thread(target=ping_main)  #建立執行緒
+        # ping_main1.start()  #執行
+        # ping_sec1 = threading.Thread(target=ping_sec)  #建立執行緒
+        # ping_sec1.start()  #執行
+        # ping_backup1 = threading.Thread(target=ping_backup)  #建立執行緒
+        # ping_backup1.start()  #執行
         ping_main1 = ping_main()
         ping_sec1 = ping_sec()
         ping_backup1 = ping_backup()
-        print("ping_backup1")
-        print(ping_backup1)
         info_status = choose_status(ping_main1, ping_sec1, ping_backup1) 
         print(info_status)
 
