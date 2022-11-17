@@ -58,11 +58,9 @@ def choose_status(ping_main, ping_sec, ping_backup):
         info_json["main_iface"]["status"] = "Active"
         info_json["sec_iface"]["status"] = "Idle"
         info_json["backup_iface"]["status"] = "Idle"
-        print("one")
+        #print("one")
 
         if a['fo']["failback"] == True:
-            # if info_json["main_iface"]["status"] == "Active":
-
             ifmetric_show = subprocess.getoutput("route -n")
             line_list = ifmetric_show.split('\n')
             if a["fo"]["main_iface"] not in line_list[2]:
@@ -86,14 +84,13 @@ def choose_status(ping_main, ping_sec, ping_backup):
             info_json["main_iface"]["status"] = "Fail"
         info_json["sec_iface"]["status"] = "Active"
         info_json["backup_iface"]["status"] = "Idle"
-        print("two")
+        #print("two")
         if a['fo']["failback"] == True:
 
             ifmetric_show = subprocess.getoutput("route -n")
             line_list = ifmetric_show.split('\n')
             if a["fo"]["sec_iface"] not in line_list[2]:
-
-                print("two failback")
+                #print("two failback")
                 os.system('ifmetric {0} 3'.format(a["fo"]["main_iface"]))
                 os.system('ifmetric {0} 1'.format(a["fo"]["sec_iface"]))
                 os.system('ifmetric {0} 2'.format(a["fo"]["backup_iface"]))
@@ -114,9 +111,8 @@ def choose_status(ping_main, ping_sec, ping_backup):
         if "en" in a["fo"]["sec_iface"]:
             info_json["sec_iface"]["status"] = "Fail"
         info_json["backup_iface"]["status"] = "Idle"
-        print("three")
+        #print("three")
         if a['fo']["failback"] == True:     
-
             ifmetric_show = subprocess.getoutput("route -n")
             line_list = ifmetric_show.split('\n')
             if a["fo"]["main_iface"] not in line_list[2]:
@@ -137,7 +133,7 @@ def choose_status(ping_main, ping_sec, ping_backup):
 
 
     if ping_main and ping_sec and ping_backup is None :
-        print("four")
+        #print("four")
         info_json["main_iface"]["status"] = "Active"
         info_json["sec_iface"]["status"] = "Idle"
         if "en" in a["fo"]["backup_iface"]:
@@ -147,9 +143,7 @@ def choose_status(ping_main, ping_sec, ping_backup):
             ifmetric_show = subprocess.getoutput("route -n")
             line_list = ifmetric_show.split('\n')
             if a["fo"]["main_iface"] not in line_list[2]:
-
-
-                print("four failback")
+                #print("four failback")
                 os.system('ifmetric {0} 1'.format(a["fo"]["main_iface"]))
                 os.system('ifmetric {0} 2'.format(a["fo"]["sec_iface"]))
                 os.system('ifmetric {0} 3'.format(a["fo"]["backup_iface"]))
@@ -171,12 +165,11 @@ def choose_status(ping_main, ping_sec, ping_backup):
         if "en" in a["fo"]["sec_iface"]:
             info_json["sec_iface"]["status"] = "Fail"
         info_json["backup_iface"]["status"] = "Active"
-        print("five")
+        #print("five")
 
         ifmetric_show = subprocess.getoutput("route -n")
         line_list = ifmetric_show.split('\n')
         if a["fo"]["backup_iface"] not in line_list[2]:
-
             os.system('ifmetric {0} 2'.format(a["fo"]["main_iface"]))
             os.system('ifmetric {0} 3'.format(a["fo"]["sec_iface"]))
             os.system('ifmetric {0} 1'.format(a["fo"]["backup_iface"]))
@@ -198,7 +191,7 @@ def choose_status(ping_main, ping_sec, ping_backup):
             info_json["sec_iface"]["status"] = "Fail"
         if "en" in a["fo"]["backup_iface"]:
             info_json["backup_iface"]["status"] = "Fail"
-        print("six")
+        #print("six")
         if a['fo']["failback"] == True: 
             ifmetric_show = subprocess.getoutput("route -n")
             line_list = ifmetric_show.split('\n')
@@ -225,13 +218,11 @@ def choose_status(ping_main, ping_sec, ping_backup):
         info_json["sec_iface"]["status"] = "Active"
         if "en" in a["fo"]["backup_iface"]:
             info_json["backup_iface"]["status"] = "Fail"
-        print("seven")
+        #print("seven")
         if a['fo']["failback"] == True:    
             ifmetric_show = subprocess.getoutput("route -n")
             line_list = ifmetric_show.split('\n')
             if a["fo"]["sec_iface"] not in line_list[2]:
-      
-
                 os.system('ifmetric {0} 3'.format(a["fo"]["main_iface"]))
                 os.system('ifmetric {0} 1'.format(a["fo"]["sec_iface"]))
                 os.system('ifmetric {0} 2'.format(a["fo"]["backup_iface"]))
@@ -247,7 +238,7 @@ def choose_status(ping_main, ping_sec, ping_backup):
 
 
     if ping_main is None and ping_sec is None and ping_backup is None :
-        print("eight")     
+        print("no network")     
           
     return info_json
             
