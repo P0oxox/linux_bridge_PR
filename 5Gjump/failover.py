@@ -61,8 +61,12 @@ def choose_status(ping_main, ping_sec, ping_backup):
         print("one")
 
         if a['fo']["failback"] == True:
-            if info_json["main_iface"]["status"] == "Active":
-            # print("one failover")
+            # if info_json["main_iface"]["status"] == "Active":
+
+            ifmetric_show = subprocess.getoutput("route -n")
+            line_list = ifmetric_show.split('\n')
+            if a["fo"]["main_iface"] not in line_list[2]:
+        
                 os.system('ifmetric {0} 1'.format(a["fo"]["main_iface"]))
                 os.system('ifmetric {0} 2'.format(a["fo"]["sec_iface"]))
                 os.system('ifmetric {0} 3'.format(a["fo"]["backup_iface"]))
@@ -84,19 +88,23 @@ def choose_status(ping_main, ping_sec, ping_backup):
         info_json["backup_iface"]["status"] = "Idle"
         print("two")
         if a['fo']["failback"] == True:
-        # if info_json["main_iface"]["status"] == "Fail":
-            print("two failback")
-            os.system('ifmetric {0} 3'.format(a["fo"]["main_iface"]))
-            os.system('ifmetric {0} 1'.format(a["fo"]["sec_iface"]))
-            os.system('ifmetric {0} 2'.format(a["fo"]["backup_iface"]))
-            for i in range(len(no_use)):
-                os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
-            
-            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
-            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
-            nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
-            if a["fo"]["sec_iface"] not in nat_show:
-                os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
+
+            ifmetric_show = subprocess.getoutput("route -n")
+            line_list = ifmetric_show.split('\n')
+            if a["fo"]["sec_iface"] not in line_list[2]:
+
+                print("two failback")
+                os.system('ifmetric {0} 3'.format(a["fo"]["main_iface"]))
+                os.system('ifmetric {0} 1'.format(a["fo"]["sec_iface"]))
+                os.system('ifmetric {0} 2'.format(a["fo"]["backup_iface"]))
+                for i in range(len(no_use)):
+                    os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
+                
+                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
+                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
+                nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
+                if a["fo"]["sec_iface"] not in nat_show:
+                    os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
           
 
 
@@ -107,18 +115,23 @@ def choose_status(ping_main, ping_sec, ping_backup):
             info_json["sec_iface"]["status"] = "Fail"
         info_json["backup_iface"]["status"] = "Idle"
         print("three")
-        if a['fo']["failback"] == True:           
-            os.system('ifmetric {0} 1'.format(a["fo"]["main_iface"]))
-            os.system('ifmetric {0} 3'.format(a["fo"]["sec_iface"]))
-            os.system('ifmetric {0} 2'.format(a["fo"]["backup_iface"]))
-            for i in range(len(no_use)):
-                os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
-            
-            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
-            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
-            nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
-            if a["fo"]["main_iface"] not in nat_show:
-                os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
+        if a['fo']["failback"] == True:     
+
+            ifmetric_show = subprocess.getoutput("route -n")
+            line_list = ifmetric_show.split('\n')
+            if a["fo"]["main_iface"] not in line_list[2]:
+
+                os.system('ifmetric {0} 1'.format(a["fo"]["main_iface"]))
+                os.system('ifmetric {0} 3'.format(a["fo"]["sec_iface"]))
+                os.system('ifmetric {0} 2'.format(a["fo"]["backup_iface"]))
+                for i in range(len(no_use)):
+                    os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
+                
+                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
+                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
+                nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
+                if a["fo"]["main_iface"] not in nat_show:
+                    os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
            
 
 
@@ -131,18 +144,23 @@ def choose_status(ping_main, ping_sec, ping_backup):
             info_json["backup_iface"]["status"] = "Fail"
 
         if a['fo']["failback"] == True:
-            print("four failback")
-            os.system('ifmetric {0} 1'.format(a["fo"]["main_iface"]))
-            os.system('ifmetric {0} 2'.format(a["fo"]["sec_iface"]))
-            os.system('ifmetric {0} 3'.format(a["fo"]["backup_iface"]))
-            for i in range(len(no_use)):
-                os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
-            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
-            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
-            nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
-            # print(nat_show)
-            if a["fo"]["main_iface"] not in nat_show:
-                os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
+            ifmetric_show = subprocess.getoutput("route -n")
+            line_list = ifmetric_show.split('\n')
+            if a["fo"]["main_iface"] not in line_list[2]:
+
+
+                print("four failback")
+                os.system('ifmetric {0} 1'.format(a["fo"]["main_iface"]))
+                os.system('ifmetric {0} 2'.format(a["fo"]["sec_iface"]))
+                os.system('ifmetric {0} 3'.format(a["fo"]["backup_iface"]))
+                for i in range(len(no_use)):
+                    os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
+                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
+                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
+                nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
+                # print(nat_show)
+                if a["fo"]["main_iface"] not in nat_show:
+                    os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
 
 
 
@@ -154,18 +172,21 @@ def choose_status(ping_main, ping_sec, ping_backup):
             info_json["sec_iface"]["status"] = "Fail"
         info_json["backup_iface"]["status"] = "Active"
         print("five")
-        # if a['fo']["failback"] == True:  
-        if info_json["main_iface"]["status"] == "Fail" or info_json["sec_iface"]["status"] == "Fail":
-                os.system('ifmetric {0} 2'.format(a["fo"]["main_iface"]))
-                os.system('ifmetric {0} 3'.format(a["fo"]["sec_iface"]))
-                os.system('ifmetric {0} 1'.format(a["fo"]["backup_iface"]))
-                for i in range(len(no_use)):
-                    os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
-                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
-                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
-                nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
-                if a["fo"]["backup_iface"] not in nat_show:
-                    os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
+
+        ifmetric_show = subprocess.getoutput("route -n")
+        line_list = ifmetric_show.split('\n')
+        if a["fo"]["backup_iface"] not in line_list[2]:
+
+            os.system('ifmetric {0} 2'.format(a["fo"]["main_iface"]))
+            os.system('ifmetric {0} 3'.format(a["fo"]["sec_iface"]))
+            os.system('ifmetric {0} 1'.format(a["fo"]["backup_iface"]))
+            for i in range(len(no_use)):
+                os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
+            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
+            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
+            nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
+            if a["fo"]["backup_iface"] not in nat_show:
+                os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
 
 
 
@@ -179,16 +200,20 @@ def choose_status(ping_main, ping_sec, ping_backup):
             info_json["backup_iface"]["status"] = "Fail"
         print("six")
         if a['fo']["failback"] == True: 
-            os.system('ifmetric {0} 1'.format(a["fo"]["main_iface"]))
-            os.system('ifmetric {0} 2'.format(a["fo"]["sec_iface"]))
-            os.system('ifmetric {0} 3'.format(a["fo"]["backup_iface"]))
-            for i in range(len(no_use)):
-                os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
-            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
-            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
-            nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
-            if a["fo"]["main_iface"] not in nat_show:
-                os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
+            ifmetric_show = subprocess.getoutput("route -n")
+            line_list = ifmetric_show.split('\n')
+            if a["fo"]["main_iface"] not in line_list[2]:
+
+                os.system('ifmetric {0} 1'.format(a["fo"]["main_iface"]))
+                os.system('ifmetric {0} 2'.format(a["fo"]["sec_iface"]))
+                os.system('ifmetric {0} 3'.format(a["fo"]["backup_iface"]))
+                for i in range(len(no_use)):
+                    os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
+                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
+                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
+                nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
+                if a["fo"]["main_iface"] not in nat_show:
+                    os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
 
 
 
@@ -201,20 +226,24 @@ def choose_status(ping_main, ping_sec, ping_backup):
         if "en" in a["fo"]["backup_iface"]:
             info_json["backup_iface"]["status"] = "Fail"
         print("seven")
-        if a['fo']["failback"] == True:          
-        # if info_json["main_iface"]["status"] == "Fail":
-            os.system('ifmetric {0} 3'.format(a["fo"]["main_iface"]))
-            os.system('ifmetric {0} 1'.format(a["fo"]["sec_iface"]))
-            os.system('ifmetric {0} 2'.format(a["fo"]["backup_iface"]))
-            for i in range(len(no_use)):
-                os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
-            
-            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
-            os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
-            nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
+        if a['fo']["failback"] == True:    
+            ifmetric_show = subprocess.getoutput("route -n")
+            line_list = ifmetric_show.split('\n')
+            if a["fo"]["sec_iface"] not in line_list[2]:
+      
 
-            if a["fo"]["sec_iface"] not in nat_show:
-                os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
+                os.system('ifmetric {0} 3'.format(a["fo"]["main_iface"]))
+                os.system('ifmetric {0} 1'.format(a["fo"]["sec_iface"]))
+                os.system('ifmetric {0} 2'.format(a["fo"]["backup_iface"]))
+                for i in range(len(no_use)):
+                    os.system('ifmetric {0} {1}'.format(no_use[i],i+10))
+                
+                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["main_iface"]))
+                os.system('iptables -t nat -D POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["backup_iface"]))
+                nat_show = subprocess.getoutput("iptables -t nat -v -L POSTROUTING -n --line-number")
+
+                if a["fo"]["sec_iface"] not in nat_show:
+                    os.system('iptables -t nat -A POSTROUTING -s {0} -o {1} -j MASQUERADE'.format('192.168.0.0/24',a["fo"]["sec_iface"]))
 
 
     if ping_main is None and ping_sec is None and ping_backup is None :

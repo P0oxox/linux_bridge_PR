@@ -1,1 +1,1 @@
-{"main_iface": {"status": ""}, "sec_iface": {"status": "Active"}, "backup_iface": {"status": "Fail"}}
+{"main_iface": {"status": "Active"}, "sec_iface": {"status": "Idle"}, "backup_iface": {"status": "Idle"}}
